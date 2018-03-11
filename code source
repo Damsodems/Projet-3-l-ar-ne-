@@ -1,0 +1,445 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <conio.h>
+#include <time.h>
+#include <windows.h>
+#include <unistd.h>
+
+
+
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
+#define IAA 4
+#define SIZE 20
+
+
+
+void clearScreen()
+{
+  const char *CLEAR_SCREEN_ANSI = "\e[1;1H\e[2J";
+  write(STDOUT_FILENO, CLEAR_SCREEN_ANSI, 12);
+}
+
+
+void Color(int couleurDuTexte,int couleurDeFond) // fonction d'affichage de couleurs
+{
+        HANDLE H=GetStdHandle(STD_OUTPUT_HANDLE);
+        SetConsoleTextAttribute(H,couleurDeFond*16+couleurDuTexte);
+}
+
+
+int IA_1(int** arene, int size)
+{
+    int i,j;
+    int  contingency[4] = {1,2,3,4}; //les possibilités de jeu
+
+    srand(time(NULL));
+    int len = 4;
+    int rank = (rand() % len );  // permet de tirer un nombre au hasard parmi les possibilités
+    int b = contingency[rank];
+
+
+    for (i=0;i<size && b > 0;i++){
+        for (j=0;j<size && b > 0;j++){ // remplace les batons par un un indicateur du joueur
+            if (arene[i][j] == 1){
+                arene[i][j]  = -1;
+                b = b - 1;   // on decremente le nombre de batons a tirés ce qui permet d'arreter la boucle
+            }
+        }
+    }
+}
+
+
+int IA_2(int** arene, int size) // meme chose avec une nouvelle vesion des possibilités
+{
+    int i,j;
+    int  contingency[3] = {1,2,3};
+
+    srand(time(NULL));
+    int len = 4;
+    int rank = (rand() % len );
+    int b = contingency[rank];
+
+    for (i=0;i<size && b > 0;i++){
+        for (j=0;j<size && b > 0;j++){
+            if (arene[i][j] == 1){
+                arene[i][j]  = -2;
+                b = b - 1;
+
+
+            }
+
+
+
+        }
+
+
+    }
+
+
+
+}
+
+
+int IA_3(int** arene, int size) // meme principe
+{
+    int i,j;
+    int  contingency2[3] = {1,2,4};
+
+    srand(time(NULL));
+    int len = 3;
+    int rank = (rand() % len );
+    int b = contingency2[rank];
+
+    for (i=0;i<size && b > 0;i++){
+        for (j=0;j<size && b > 0;j++){
+            if (arene[i][j] == 1){
+                arene[i][j]  = -3;
+                b = b - 1;
+
+
+            }
+
+
+
+        }
+
+
+    }
+
+
+
+}
+
+
+
+
+int IA_AMINE(int batons[4]) // pas encore utilisé
+{
+    int IA;
+    int i;
+    i = 0;
+    IA = 0;
+    batons[0] = 1;
+    batons[1] = 1;
+    batons[2] = 1;
+    batons[3] = 1;
+    while (i < 1)
+    {
+        IA = IA + batons[i];
+        i = i + 1;
+    }
+    printf("IA_AMINE possede maintenant %d baton\n",IA);
+    return 0;
+}
+
+
+
+int IA_DAMIEN(int batons[4])  // pas encore utilisé
+{
+    int IA;
+    IA = 0;
+    batons[0] = 1;
+    batons[1] = 1;
+    batons[2] = 1;
+    batons[3] = 1;
+    printf("IA_DAMIEN possede maintenant %d baton\n",IA);
+    return 0;
+}
+
+
+int IA_JUSTINE(int batons[4]) // pas encore utilisé
+{
+    batons[0] = 1;
+    batons[1] = 1;
+    batons[2] = 1;
+    batons[3] = 1;
+    printf("IA_JUSTINE regarde les autres jouer");
+    return 0;
+}
+
+
+
+
+int CHOIX_PLAYER(int batons[4]) // permet de determiner l'ordre des joueurs au hasard (on ne l'utilise pas pour l'instant car l'utilisateur joue en premier
+{
+    srand(time(NULL));
+    int current_player = rand() % (IAA + 1) ;
+    switch (current_player)
+    {
+    case 1:
+        // IA_1(batons);
+        break;
+    case 2:
+        //IA_2(batons);
+        break;
+    case 3:
+        //IA_ILIAN(batons);
+        break;
+    case 4:
+        IA_AMINE(batons);
+        break;
+    default:
+        IA_DAMIEN(batons);
+        break;
+    }
+    current_player = current_player + 1;
+    if  ( current_player == IAA + 1) current_player = 1;
+}
+
+
+void print_map(int** arene, int size)  // affiche l'arene avec les batons les trous et les IAs.
+{
+    int i,j,x,y;
+    srand(time(NULL));
+
+    for (i=0; i<=size*2 + 4; i++)
+    {
+        printf("X");
+    }
+    printf("\n");
+    //affiche 1er ligne de X
+
+
+    for (x=0; x<size; x++)
+    {
+        printf("XX ");//ce qui entoure la carte
+        //for (j=0;j<=SIZE;j on part de 0 jusqu'a 19 pour avoir 20 cases.
+        for (y=0; y<size; y++)
+        {
+            //if map[i][j] = 1
+            if (arene[x][y] == 1)
+            {
+                Color(15,0);
+                printf("| ");
+                Color(15,0);  // affiche un baton pour les case non joué et non nulle( different de trou)
+            }
+            else if(arene[x][y]== -1){
+                Color(14,0);
+                printf("A ");
+                Color(15,0);
+
+            }
+            else if (arene[x][y]== -2){
+                Color(11,0);
+                printf("B ");
+                Color(15,0);
+
+            }
+            else if (arene[x][y]== -3)
+            {
+                Color(12,0);
+                printf("C ");
+                Color(15,0);
+            }
+            else if (arene[x][y]== 6)
+            {
+                Color(10,0);
+                printf("U ");
+                Color(15,0);
+
+            }
+            else
+            {
+               printf("  ");  // afiiche un espace pour les positions suivant le trou
+
+            }
+        }
+
+        printf("XX\n"); //ce qui entoure la carte
+
+    }
+
+
+
+    for (i = 0; i <= size*2 +4; i++)
+    {
+        printf("X");
+    }
+    printf("\n"); //affiche derniere ligne de X
+}
+
+int** tableau_arene(int** arene, int size) // initialise l'arene de batons et de trous
+{
+    int i,j,x,y;
+
+    srand(time(NULL));
+
+    int postrou[2];
+    postrou[0]= rand() % size;
+    postrou[1]= rand() % size;   // determine les coordonné x et y du trou
+    for (x=0; x<size; x++)
+    {
+        //for (j=0;j<=SIZE;j on part de 0 jusqu'a 19 pour avoir 20 cases.
+        for (y=0; y<size; y++)
+        {
+            //if map[i][j] = 1
+            if ((x >= postrou[1] && y >= postrou[0]) || (x >postrou[1]))
+            {
+                arene[x][y] = 0; // efface les baton apres une certaine case determiné au hasard
+            }
+
+            else
+            {
+                arene[x][y] = 1;
+            }
+
+        }
+    }
+}
+
+
+
+
+
+
+
+
+/*IA_LEA(arene);
+   IA_LEO(arene);
+   IA_ILIAN(arene);
+   IA_AMINE(arene);
+   IA_DAMIEN(arene);
+   IA_JUSTINE(arene);
+*/
+int looser_game(int** arene,int size) // verifie qu'il y a encore des batons sur l'arene et renvoie un booleen qui permet de poursuivre la partie
+{
+     int i,j;
+     int joueurperd = 1;
+        for (i=0;i<size  ;i++){
+        for (j=0;j<size  ;j++){
+            if (arene[i][j] == 1){
+                joueurperd = 0;
+
+            }
+
+
+
+        }
+
+
+    }
+return joueurperd ;
+
+
+}
+
+
+int winner_game(int** arene, int size) // compte le nombre de point pour chaque joueur et les affiches
+{
+        int i,j;
+        int pointIA1 = 0;
+        int pointIA2 = 0;
+        int pointIA3 = 0;
+        int pointU = 0;
+        for (i=0;i<size  ;i++){
+            for (j=0;j<size  ;j++){
+                switch(arene[i][j])
+                {
+                    case -1:
+                        pointIA1++;
+                        break;
+
+                    case -2:
+                        pointIA2++;
+                        break;
+                    case -3:
+                        pointIA3++;
+                        break;
+                    case 6:
+                        pointU++;
+                        break;
+                }
+            }
+        }
+
+Color(14,0);
+printf("IA_A a marque %d de points\n", pointIA1);
+Color(11,0);
+printf("IA_B a marque %d de points\n", pointIA2);
+Color(12,0);
+printf("IA_C a marque %d de points\n", pointIA3);
+Color(10,0);
+printf("Vous avez marque %d de points\n", pointU);
+Color(15,0);
+
+}
+
+
+
+
+
+
+int main()
+{
+    int jouer,rejouer;
+    Color(14,0);
+    printf("\n\t\t\t\t==>BIENVENUE DANS NOTRE JEU: TAKE A STICK<==\n\n\n\n ");
+
+
+    printf("\t\t\t\t\t\t*Objectif*\n");
+    Color(5,0);
+    printf("\t\t\t*Recuperer un maximum de baton sans etre eliminer.\n\t\t\t*Mais attention !! car si vous prenez le dernier baton vous perdez.\n");
+    Color(14,0);
+    printf("\n\t\t\t\t\t\t*Regles*\n");
+    Color(5,0);
+    printf("\t\t\tLes regles sont simples:\n\t\t\t*Sur l'arene sont dispose un certain nombre de baton.\n");
+    printf("\t\t\t*Vous pouvez tirez entre 1 et 4 batons.\n");
+    printf("\t\t\t*Ainsi, vous affronterez les IA que nous avons concus. \n\t\t\t*Mais ne vous inquieter elles sont facile a battre !\n ");
+    Color(14,0);
+    printf("\n\nVoulez vous jouer ? ");
+    scanf("%d",&jouer);
+    Color(15,0);
+
+    if (jouer == 1){
+
+
+    int size = SIZE;
+    int *arene[size];
+    int i = 0;
+    while (i < size) {
+        arene[i] = malloc(size * sizeof(int));
+        ++i;
+    }
+
+    printf("\n");
+    tableau_arene(arene,size);
+    printf("\n");
+    //CHOIX_PLAYER(batons);0
+
+    do{    // tester si le jeu est terminé
+        print_map(arene, size);   //on affiche l'arene
+        int i;
+        do{
+            printf("\nCombien de batons voulez vous retirer ?  ");
+            scanf("%d", &i);
+            if(i<1 || i>4)
+                printf("\nVeuillez saisir une valeur comprise entre 1 et 4\n");
+        }while(i<1 || i>4);
+        int x, y;
+        for (x = 0; x < size && i > 0; ++x) {
+            for (y = 0; y < size && i > 0; ++y) { // l'utilisateur joue
+                if (arene[x][y] == 1) {
+                    arene[x][y] = 6;
+                    i =  i - 1;
+                }
+            }
+        }
+        IA_1(arene, size);
+        IA_2(arene,size);  //puis les IAs
+        IA_3(arene,size);
+        print_map(arene, size);  // on afiche de nouveau la map pour le dernier tour car sinon on ne verrait pas qui a prit le dernier baton
+
+    }while(!looser_game(arene, size)); // on joue tant que personne n'a perdu
+
+    printf("\nle joueur qui a prit le dernier baton a perdu \n");
+    winner_game(arene,size); // on affiche le score des joueurs
+
+
+    }
+
+
+    return 0;
